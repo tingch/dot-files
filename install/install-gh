@@ -1,0 +1,47 @@
+#!/bin/sh
+set -e
+
+# gh (github cli utility) Linux installation script
+#
+# This script only supports installs from official sources
+#
+# See https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+# for the installation steps.
+#
+# Official sources as of Jan 29, 2022:
+#   * Debian, Ubuntu, Raspberry Pi OS
+#   * Fedora, CentOS, Red Hat Enterprise Linux
+#   * openSUSE/SUSE Linux
+
+GH_PKG_URI="cli.github.com/packages"
+
+_get_distribution() {
+  # Only supports systems that have /etc/os-release
+  if ! test -r /etc/os-release; then
+    echo ""
+    return
+  fi
+  . /etc/os-release && echo "$ID"
+}
+
+_install_via_apt() {
+  _keyring="/etc/apt/trusted.gpg.d"
+  _key="githubcli-archive-keyring.gpg"
+  curl -fsSL "https://${GH_PKG_URI}/${_key}" | sudo dd of="${_keyring}/${_key}"
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=${_keyring}/${_key}] https://${GH_PKG_URI} stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+  sudo apt update
+  sudo apt install gh
+}
+
+_install_via_dnf() {
+  sudo dnf config-manager --add-repo "https://${GH_PKG_URI}/rpm/gh-cli.repo"
+  sudo dnf install gh
+}
+
+_install_via_zypper() {
+  sudo zypper addrepo "https://${GH_PKG_URI}/rpm/gh-cli.repo"
+  sudo zypper ref
+  sudo zypper install gh
+}
+
+
