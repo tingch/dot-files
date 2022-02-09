@@ -15,15 +15,6 @@ set -e
 
 GH_PKG_URI="cli.github.com/packages"
 
-_get_distribution() {
-  # Only supports systems that have /etc/os-release
-  if ! test -r /etc/os-release; then
-    echo ""
-    return
-  fi
-  . /etc/os-release && echo "$ID"
-}
-
 _install_via_apt() {
   _keyring="/etc/apt/trusted.gpg.d"
   _key="githubcli-archive-keyring.gpg"
@@ -44,4 +35,8 @@ _install_via_zypper() {
   sudo zypper install gh
 }
 
-
+_install_gh() {
+  # TODO
+  # for loop the package managers
+  # run the first one that exists
+}
