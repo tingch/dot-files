@@ -36,7 +36,12 @@ _install_via_zypper() {
 }
 
 _install_gh() {
-  # TODO
-  # for loop the package managers
-  # run the first one that exists
+  for c in apt dnf zypper; do
+    if command -v "$c" > /dev/null 2>&1; then
+      "_install_via_$c"
+      break
+    fi
+  done
 }
+
+_install_gh
